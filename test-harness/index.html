@@ -75,6 +75,32 @@
   </section>
 
   <section>
+    <h3>6. Create a module (needs a course _id from section 3)</h3>
+    <div class="row">
+      <input id="module-course-id" placeholder="Course _id to attach module to" style="width:300px" />
+    </div>
+    <div class="row">
+      <textarea id="module-body">{"title":"Module 1: Introduction","description":"Getting started","order":1}</textarea>
+    </div>
+    <div class="row">
+      <button onclick="call('POST', `/api/courses/${document.getElementById('module-course-id').value}/modules`, document.getElementById('module-body').value)">POST create module</button>
+    </div>
+  </section>
+
+  <section>
+    <h3>7. Upload a file to a module (real Appwrite upload)</h3>
+    <div class="row">
+      <input id="upload-module-id" placeholder="Module _id from section 6 response" style="width:300px" />
+    </div>
+    <div class="row">
+      <input id="upload-file" type="file" accept=".pdf,.mp4,.ppt,.pptx" />
+    </div>
+    <div class="row">
+      <button onclick="uploadFile()">Upload file to module</button>
+    </div>
+  </section>
+
+  <section>
     <h3>Raw request (any endpoint)</h3>
     <div class="row">
       <select id="method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select>
@@ -159,6 +185,33 @@
     const name = window.Clerk.user?.fullName || "Test User";
     const email = window.Clerk.user?.primaryEmailAddress?.emailAddress || "test@example.com";
     await call("POST", "/api/users/sync", JSON.stringify({ name, email, role }));
+  }
+
+  async function uploadFile() {
+    const output = document.getElementById("output");
+    const moduleId = document.getElementById("upload-module-id").value;
+    const fileInput = document.getElementById("upload-file");
+    const file = fileInput.files[0];
+
+    if (!moduleId) return (output.textContent = "Error: enter a module _id first");
+    if (!file) return (output.textContent = "Error: choose a file first");
+
+    output.textContent = "Uploading...";
+    try {
+      const token = await getToken();
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${API_BASE}/api/modules/${moduleId}/upload`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }, // no Content-Type - browser sets multipart boundary automatically
+        body: formData,
+      });
+      const data = await res.json().catch(() => ({ note: "no JSON body returned" }));
+      output.textContent = `POST /api/modules/${moduleId}/upload\nStatus: ${res.status}\n\n` + JSON.stringify(data, null, 2);
+    } catch (err) {
+      output.textContent = "Error: " + err.message;
+    }
   }
 </script>
 
