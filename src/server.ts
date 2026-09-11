@@ -14,6 +14,7 @@ import progressRoutes from "./routes/progressRoutes";
 import competencyRoutes from "./routes/competencyRoutes";
 import trainerRoutes from "./routes/trainerRoutes";
 import adminRoutes from "./routes/adminRoutes";
+import uploadRoutes from "./routes/uploadRoutes";
 
 const app = express();
 const PORT = env.PORT;
@@ -36,6 +37,7 @@ app.use("/api", progressRoutes); // exposes /api/courses/:id/progress
 app.use("/api", competencyRoutes); // exposes /api/competencies, /api/users/me/competencies, /api/users/me/skill-gaps
 app.use("/api/trainers", trainerRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api", uploadRoutes); // exposes /api/modules/:id/upload
 
 // must be registered LAST - catches errors thrown by asyncHandler-wrapped routes
 app.use(errorMiddleware);
