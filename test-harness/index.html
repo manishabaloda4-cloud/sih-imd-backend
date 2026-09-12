@@ -101,6 +101,59 @@
   </section>
 
   <section>
+    <h3>8. Create an assessment (needs a course _id from section 3)</h3>
+    <div class="row">
+      <input id="assessment-course-id" placeholder="Course _id" style="width:300px" />
+    </div>
+    <div class="row">
+      <textarea id="assessment-body">{"title":"Module 1 Quiz","description":"Basic check","duration":10,"passingScore":60,"questions":[{"question":"Which satellite type is used for continuous weather monitoring?","options":["Polar orbiting","Geostationary","GPS","Communication"],"correctAnswer":1,"marks":10},{"question":"What does IMD stand for?","options":["India Meteorological Department","Indian Marine Department","International Meteorology Division","India Monsoon Data"],"correctAnswer":0,"marks":10}]}</textarea>
+    </div>
+    <div class="row">
+      <button onclick="call('POST', `/api/assessments`, buildAssessmentBody())">POST create assessment</button>
+    </div>
+  </section>
+
+  <section>
+    <h3>9. View an assessment (get question _ids - needed for submitting)</h3>
+    <div class="row">
+      <input id="assessment-id" placeholder="Assessment _id from section 8 response" style="width:300px" />
+      <button onclick="call('GET', `/api/assessments/${document.getElementById('assessment-id').value}`)">GET assessment + questions</button>
+    </div>
+  </section>
+
+  <section>
+    <h3>10. Submit assessment answers (sign in as TRAINEE first)</h3>
+    <div class="row">
+      <input id="submit-assessment-id" placeholder="Assessment _id" style="width:300px" />
+    </div>
+    <div class="row">
+      <textarea id="submit-body" placeholder='{"answers":[{"questionId":"PASTE_QUESTION_ID","selectedOption":1},{"questionId":"PASTE_QUESTION_ID","selectedOption":0}]}'></textarea>
+    </div>
+    <div class="row">
+      <button onclick="call('POST', `/api/assessments/${document.getElementById('submit-assessment-id').value}/submit`, document.getElementById('submit-body').value)">POST submit answers</button>
+    </div>
+  </section>
+
+  <section>
+    <h3>11. Progress (sign in as TRAINEE - needs a course _id and module _id)</h3>
+    <div class="row">
+      <input id="progress-course-id" placeholder="Course _id" style="width:300px" />
+      <button onclick="call('GET', `/api/courses/${document.getElementById('progress-course-id').value}/progress`)">GET my progress</button>
+    </div>
+    <div class="row">
+      <input id="progress-module-id" placeholder="Module _id to mark complete" style="width:300px" />
+      <button onclick="call('PUT', `/api/courses/${document.getElementById('progress-course-id').value}/progress`, JSON.stringify({moduleId: document.getElementById('progress-module-id').value}))">PUT mark module complete</button>
+    </div>
+  </section>
+
+  <section>
+    <h3>12. Skill gaps (sign in as TRAINEE)</h3>
+    <div class="row">
+      <button onclick="call('GET', '/api/users/me/skill-gaps')">GET /api/users/me/skill-gaps</button>
+    </div>
+  </section>
+
+  <section>
     <h3>Raw request (any endpoint)</h3>
     <div class="row">
       <select id="method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select>
@@ -155,6 +208,13 @@
     const session = window.Clerk.session;
     if (!session) throw new Error("Not signed in");
     return await session.getToken();
+  }
+
+  function buildAssessmentBody() {
+    const courseId = document.getElementById("assessment-course-id").value;
+    const parsed = JSON.parse(document.getElementById("assessment-body").value);
+    parsed.courseId = courseId;
+    return JSON.stringify(parsed);
   }
 
   async function call(method, path, bodyStr) {
