@@ -57,7 +57,3 @@ If you see that, your backend is live.
 3. Dashboard route (aggregate completion %, at-risk trainees, region-wise stats - use MongoDB aggregation pipeline)
 4. Trainer-matching endpoint (compare course.requiredCompetencies against User.competencies)
 5. File upload endpoint wired to Appwrite for course PDFs/videos
-
-## Send this to frontend team NOW
-Base URL once deployed: `http://localhost:5000/api` (or your deployed URL)
-All routes above are the contract - Divyansh/Rakesh can build UI against these with dummy JSON matching the model shapes.
