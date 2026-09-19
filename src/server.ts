@@ -15,6 +15,8 @@ import competencyRoutes from "./routes/competencyRoutes";
 import trainerRoutes from "./routes/trainerRoutes";
 import adminRoutes from "./routes/adminRoutes";
 import uploadRoutes from "./routes/uploadRoutes";
+import certificateRoutes from "./routes/certificateRoutes";
+import notificationRoutes from "./routes/notificationRoutes";
 
 const app = express();
 const PORT = env.PORT;
@@ -38,6 +40,8 @@ app.use("/api", competencyRoutes); // exposes /api/competencies, /api/users/me/c
 app.use("/api/trainers", trainerRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api", uploadRoutes); // exposes /api/modules/:id/upload
+app.use("/api/certificates", certificateRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // must be registered LAST - catches errors thrown by asyncHandler-wrapped routes
 app.use(errorMiddleware);

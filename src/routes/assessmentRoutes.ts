@@ -10,6 +10,9 @@ import { asyncHandler } from "../middleware/errorMiddleware";
 import { success, fail } from "../utils/apiResponse";
 import { scoreSubmission } from "../services/scoringService";
 import { updateUserCompetency } from "../services/competencyService";
+import crypto from "crypto";
+import Certificate from "../models/Certificate";
+import Notification from "../models/Notification";
 
 const router = Router();
 
@@ -129,7 +132,7 @@ router.post(
     }
 
     // update enrollment with the latest score for this course
-    await Enrollment.findOneAndUpdate(
+        await Enrollment.findOneAndUpdate(
       { userId: user._id, courseId: assessment.courseId },
       {
         assessmentScore: result.percentage,
@@ -137,6 +140,23 @@ router.post(
         ...(result.passed ? { completedAt: new Date() } : {}),
       }
     );
+
+    // issue certificate + notify if they just passed
+    if (result.passed) {
+      const existingCert = await Certificate.findOne({ traineeId: user._id, courseId: assessment.courseId });
+      if (!existingCert) {
+        await Certificate.create({
+          traineeId: user._id,
+          courseId: assessment.courseId,
+          verificationId: crypto.randomBytes(8).toString("hex").toUpperCase(),
+        });
+        await Notification.create({
+          userId: user._id,
+          message: "Congratulations! You've earned a certificate for completing this course.",
+          type: "certificate_issued",
+        });
+      }
+    }
 
     return success(res, submission, "Assessment submitted and scored", 201);
   })

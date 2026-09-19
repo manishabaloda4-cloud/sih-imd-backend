@@ -3,6 +3,7 @@ import User from "../models/User";
 import Course from "../models/Course";
 import Enrollment from "../models/Enrollment";
 import Submission from "../models/Submission";
+import Notification from "../models/Notification";
 import { requireLogin, requireRole } from "../middleware/auth";
 import { asyncHandler } from "../middleware/errorMiddleware";
 import { success, fail } from "../utils/apiResponse";
@@ -77,6 +78,11 @@ router.put(
       { new: true }
     );
     if (!user) return fail(res, "User not found", 404);
+    await Notification.create({
+      userId: user._id,
+      message: "Your trainer account has been approved!",
+      type: "trainer_approved",
+    });
     return success(res, user, "Trainer approved");
   })
 );
@@ -91,6 +97,11 @@ router.put(
       { new: true }
     );
     if (!user) return fail(res, "User not found", 404);
+    await Notification.create({
+      userId: user._id,
+      message: "Your trainer application was not approved.",
+      type: "trainer_rejected",
+    });
     return success(res, user, "Trainer rejected");
   })
 );

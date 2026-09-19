@@ -154,6 +154,24 @@
   </section>
 
   <section>
+    <h3>13. My certificates (sign in as TRAINEE - auto-issued when you pass an assessment)</h3>
+    <div class="row">
+      <button onclick="call('GET', '/api/certificates')">GET /api/certificates</button>
+    </div>
+  </section>
+
+  <section>
+    <h3>14. My notifications</h3>
+    <div class="row">
+      <button onclick="call('GET', '/api/notifications')">GET /api/notifications</button>
+    </div>
+    <div class="row">
+      <input id="notif-id" placeholder="Notification _id to mark read" style="width:300px" />
+      <button onclick="call('PUT', `/api/notifications/${document.getElementById('notif-id').value}/read`)">PUT mark as read</button>
+    </div>
+  </section>
+
+  <section>
     <h3>Raw request (any endpoint)</h3>
     <div class="row">
       <select id="method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select>
